@@ -8,6 +8,7 @@ import (
 )
 
 func home(w http.ResponseWriter, r *http.Request){
+	w.Header().Add("Server", "Go")
 	w.Write([]byte("Hello From SnippetBox"))
 }
 func snippetView(w http.ResponseWriter, r *http.Request){
@@ -17,19 +18,25 @@ func snippetView(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	msg:=fmt.Sprintf("Display a snippet with id %d",id)
-	w.Write([]byte(msg))
+	fmt.Fprintf(w,"Display a snippet with id %d",id)
+	//w.Write([]byte(msg))
 }
 func snippetCreate(w http.ResponseWriter, r *http.Request){
 	w.Write([]byte("Display a form to create a snippet"))
 }
 
+func snippetCreatePost(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusCreated)
+    w.Write([]byte("Save a new snippet..."))
+}
+
 func main() {
     // fmt.Println("Hello world!")
 	mux:=http.NewServeMux()
-	mux.HandleFunc("/{$}",home)
-	mux.HandleFunc("/snippet/view/{id}",snippetView)
-	mux.HandleFunc("/snippet/create",snippetCreate)
+	mux.HandleFunc("GET /{$}",home)
+	mux.HandleFunc("GET /snippet/view/{id}",snippetView)
+	mux.HandleFunc("GET /snippet/create",snippetCreate)
+	mux.HandleFunc("POST /snippet/create",snippetCreatePost)
 
 
 	log.Print("starting server on :4000")
